@@ -3,207 +3,672 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MRMUJI_FX — AI Trading Journal</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-  body {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-    display: flex; align-items: center; justify-content: center;
-    padding: 20px;
-  }
-  .container {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 215, 0, 0.2);
-    border-radius: 20px;
-    padding: 40px;
-    width: 100%; max-width: 420px;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
-  }
-  .logo-wrap { text-align: center; margin-bottom: 25px; }
-  .logo-wrap img {
-    width: 90px; height: 90px;
-    border-radius: 50%;
-    background: #fff;
-    padding: 8px;
-    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
-  }
-  h1 {
-    color: #FFD700; text-align: center;
-    font-size: 26px; margin-bottom: 6px;
-    letter-spacing: 2px;
-  }
-  .tagline {
-    color: #a0a0c0; text-align: center;
-    font-size: 13px; margin-bottom: 30px;
-  }
-  .tabs { display: flex; margin-bottom: 25px; background: rgba(0,0,0,0.3); border-radius: 10px; padding: 4px; }
-  .tab {
-    flex: 1; padding: 10px; text-align: center; cursor: pointer;
-    color: #a0a0c0; border-radius: 8px; transition: all 0.3s;
-    font-weight: 600; font-size: 14px;
-  }
-  .tab.active { background: #FFD700; color: #1a1a2e; }
-  .form { display: none; }
-  .form.active { display: block; }
-  .input-group { margin-bottom: 16px; }
-  .input-group label { display: block; color: #c0c0d0; font-size: 13px; margin-bottom: 6px; }
-  .input-group input {
-    width: 100%; padding: 12px 14px;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,215,0,0.2);
-    border-radius: 8px; color: #fff; font-size: 14px;
-    transition: all 0.3s;
-  }
-  .input-group input:focus {
-    outline: none; border-color: #FFD700;
-    background: rgba(255,255,255,0.12);
-  }
-  .btn {
-    width: 100%; padding: 13px;
-    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-    color: #1a1a2e; border: none; border-radius: 8px;
-    font-size: 15px; font-weight: 700; cursor: pointer;
-    margin-top: 10px; transition: transform 0.2s;
-    letter-spacing: 1px;
-  }
-  .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(255,215,0,0.4); }
-  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-  .message {
-    margin-top: 15px; padding: 10px;
-    border-radius: 8px; font-size: 13px; text-align: center;
-    display: none;
-  }
-  .message.error { background: rgba(255,80,80,0.15); color: #ff6b6b; border: 1px solid rgba(255,80,80,0.3); display: block; }
-  .message.success { background: rgba(80,255,150,0.15); color: #6bff9e; border: 1px solid rgba(80,255,150,0.3); display: block; }
-  .footer { text-align: center; margin-top: 25px; color: #707090; font-size: 12px; }
-</style>
-</head>
-<body>
-  <div class="container">
-    <div class="logo-wrap">
-      <img src="logo.jpg" alt="MRMUJI_FX Logo">
-    </div>
-    <h1>MRMUJI_FX</h1>
-    <p class="tagline">AI-Powered Trading Journal</p>
+<title>MrMuji FX Journal</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-    <div class="tabs">
-      <div class="tab active" onclick="switchTab('login')">Login</div>
-      <div class="tab" onclick="switchTab('signup')">Sign Up</div>
-    </div>
-
-    <!-- LOGIN FORM -->
-    <form class="form active" id="loginForm" onsubmit="handleLogin(event)">
-      <div class="input-group">
-        <label>Email</label>
-        <input type="email" id="loginEmail" required placeholder="you@example.com">
-      </div>
-      <div class="input-group">
-        <label>Password</label>
-        <input type="password" id="loginPassword" required placeholder="••••••••">
-      </div>
-      <button class="btn" type="submit" id="loginBtn">LOGIN</button>
-    </form>
-
-    <!-- SIGNUP FORM -->
-    <form class="form" id="signupForm" onsubmit="handleSignup(event)">
-      <div class="input-group">
-        <label>Full Name</label>
-        <input type="text" id="signupName" required placeholder="John Doe">
-      </div>
-      <div class="input-group">
-        <label>Email</label>
-        <input type="email" id="signupEmail" required placeholder="you@example.com">
-      </div>
-      <div class="input-group">
-        <label>Password (min 6 chars)</label>
-        <input type="password" id="signupPassword" required minlength="6" placeholder="••••••••">
-      </div>
-      <button class="btn" type="submit" id="signupBtn">CREATE ACCOUNT</button>
-    </form>
-
-    <div class="message" id="message"></div>
-
-    <p class="footer">© 2025 MRMUJI_FX • All rights reserved</p>
-  </div>
-
-<!-- Firebase SDK -->
+<!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import {
-    getAuth, createUserWithEmailAndPassword,
-    signInWithEmailAndPassword, updateProfile
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import {
-    getFirestore, doc, setDoc, serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+  // ============================================================
+  // AAPKI FIREBASE CONFIG — YEH WAHAN SE COPY KAREIN:
+  // Firebase Console → Project Settings → Your Apps → Config
+  // ============================================================
   const firebaseConfig = {
-    apiKey: "AIzaSyA_z9TCT0ftHruzgI8MQ2S8gMK4-T4UA",
-    authDomain: "mujifx-74d33.firebaseapp.com",
-    projectId: "mujifx-74d33",
-    storageBucket: "mujifx-74d33.appspot.com",
-    messagingSenderId: "191070893489",
-    appId: "1:191070893489:web:f325f9699838eaf2e94520",
-    measurementId: "G-M84JLX3FX9"
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
   };
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
+  const googleProvider = new GoogleAuthProvider();
 
-  window.switchTab = function(tab) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.form').forEach(f => f.classList.remove('active'));
-    event.target.classList.add('active');
-    document.getElementById(tab + 'Form').classList.add('active');
-    document.getElementById('message').className = 'message';
-  };
+  // ============================================================
+  // MENTOR UID — Register karne ke baad apni UID yahan daalein
+  // Firebase Console → Authentication → Users mein milegi
+  // ============================================================
+  const MENTOR_UID = "YOUR_MENTOR_UID_HERE";
 
-  function showMsg(text, type) {
-    const m = document.getElementById('message');
-    m.textContent = text;
-    m.className = 'message ' + type;
-  }
-
-  window.handleLogin = async function(e) {
-    e.preventDefault();
-    const btn = document.getElementById('loginBtn');
-    btn.disabled = true; btn.textContent = 'LOGGING IN...';
-    try {
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-      showMsg('✅ Welcome back, ' + (cred.user.displayName || 'Trader') + '!', 'success');
-      // TODO: redirect to dashboard later
-      // setTimeout(() => window.location.href = 'dashboard.html', 1500);
-    } catch (err) {
-      showMsg('❌ ' + (err.code === 'auth/invalid-credential' ? 'Wrong email or password' : err.message), 'error');
+  // Auth state listener
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        if (data.role === "mentor") {
+          window.location.href = "mentor-dashboard.html";
+        } else if (data.status === "approved") {
+          window.location.href = "dashboard.html";
+        } else if (data.status === "pending") {
+          showScreen("pending-screen");
+        } else if (data.status === "rejected") {
+          showScreen("rejected-screen");
+        }
+      }
     }
-    btn.disabled = false; btn.textContent = 'LOGIN';
-  };
+  });
 
-  window.handleSignup = async function(e) {
-    e.preventDefault();
-    const btn = document.getElementById('signupBtn');
-    btn.disabled = true; btn.textContent = 'CREATING...';
+  // ---- REGISTER ----
+  window.handleRegister = async () => {
+    const name = document.getElementById("reg-name").value.trim();
+    const email = document.getElementById("reg-email").value.trim();
+    const pass = document.getElementById("reg-pass").value;
+    const pass2 = document.getElementById("reg-pass2").value;
+    const btn = document.getElementById("reg-btn");
+
+    if (!name || !email || !pass) return showToast("Saare fields bharein", "error");
+    if (pass !== pass2) return showToast("Passwords match nahi hain", "error");
+    if (pass.length < 6) return showToast("Password kam se kam 6 characters ka hona chahiye", "error");
+
+    btn.disabled = true;
+    btn.textContent = "Register ho raha hai...";
+
     try {
-      const name = document.getElementById('signupName').value;
-      const email = document.getElementById('signupEmail').value;
-      const password = document.getElementById('signupPassword').value;
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(cred.user, { displayName: name });
-      await setDoc(doc(db, 'users', cred.user.uid), {
-        name: name, email: email, role: 'trader', createdAt: serverTimestamp()
+      const cred = await createUserWithEmailAndPassword(auth, email, pass);
+      await sendEmailVerification(cred.user);
+      await setDoc(doc(db, "users", cred.user.uid), {
+        uid: cred.user.uid,
+        name: name,
+        email: email,
+        role: "student",
+        status: "pending",
+        createdAt: serverTimestamp(),
+        mentorUid: MENTOR_UID
       });
-      showMsg('🎉 Account created! Welcome, ' + name + '!', 'success');
-      document.getElementById('signupForm').reset();
+      showToast("Registration ho gayi! Email verify karein.", "success");
+      setTimeout(() => showScreen("pending-screen"), 1500);
     } catch (err) {
-      showMsg('❌ ' + (err.code === 'auth/email-already-in-use' ? 'Email already registered' : err.message), 'error');
+      let msg = "Kuch masla hua, dobara try karein";
+      if (err.code === "auth/email-already-in-use") msg = "Yeh email pehle se registered hai";
+      showToast(msg, "error");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Register Karein";
     }
-    btn.disabled = false; btn.textContent = 'CREATE ACCOUNT';
   };
+
+  // ---- LOGIN ----
+  window.handleLogin = async () => {
+    const email = document.getElementById("login-email").value.trim();
+    const pass = document.getElementById("login-pass").value;
+    const btn = document.getElementById("login-btn");
+
+    if (!email || !pass) return showToast("Email aur password daalein", "error");
+
+    btn.disabled = true;
+    btn.textContent = "Login ho raha hai...";
+
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+      showToast("Login ho gaye!", "success");
+    } catch (err) {
+      let msg = "Email ya password galat hai";
+      if (err.code === "auth/user-not-found") msg = "Account nahi mila";
+      if (err.code === "auth/wrong-password") msg = "Password galat hai";
+      showToast(msg, "error");
+      btn.disabled = false;
+      btn.textContent = "Login Karein";
+    }
+  };
+
+  // ---- GOOGLE LOGIN ----
+  window.handleGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (!userDoc.exists()) {
+        await setDoc(doc(db, "users", user.uid), {
+          uid: user.uid,
+          name: user.displayName,
+          email: user.email,
+          role: "student",
+          status: "pending",
+          createdAt: serverTimestamp(),
+          mentorUid: MENTOR_UID
+        });
+      }
+      showToast("Google se login ho gaye!", "success");
+    } catch (err) {
+      showToast("Google login mein masla hua", "error");
+    }
+  };
+
+  // ---- LOGOUT ----
+  window.handleLogout = async () => {
+    await signOut(auth);
+    showScreen("login-screen");
+    showToast("Logout ho gaye", "success");
+  };
+</script>
+
+<style>
+:root {
+  --gold: #C9A84C;
+  --gold-light: #E8C96A;
+  --gold-dim: #8B6914;
+  --bg: #0A0A0A;
+  --bg2: #111111;
+  --bg3: #181818;
+  --surface: #1C1C1C;
+  --border: rgba(201,168,76,0.2);
+  --border-hover: rgba(201,168,76,0.5);
+  --text: #F0EAD6;
+  --text-dim: #8A8070;
+  --red: #E05252;
+  --green: #52C97F;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ---- BACKGROUND PATTERN ---- */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(201,168,76,0.08) 0%, transparent 60%),
+    repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(201,168,76,0.02) 60px, rgba(201,168,76,0.02) 61px),
+    repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(201,168,76,0.02) 60px, rgba(201,168,76,0.02) 61px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ---- SCREENS ---- */
+.screen {
+  display: none;
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+.screen.active { display: flex; }
+
+/* ---- AUTH LAYOUT ---- */
+#auth-screen {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+/* ---- LOGO ---- */
+.logo-block {
+  text-align: center;
+  margin-bottom: 40px;
+  animation: fadeDown 0.8s ease both;
+}
+
+/* Markhor SVG logo */
+.markhor-logo {
+  width: 80px;
+  height: 100px;
+  margin: 0 auto 16px;
+  filter: drop-shadow(0 0 18px rgba(201,168,76,0.5));
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { filter: drop-shadow(0 0 18px rgba(201,168,76,0.5)); }
+  50% { filter: drop-shadow(0 0 32px rgba(201,168,76,0.9)); }
+}
+
+.logo-title {
+  font-family: 'Cinzel', serif;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, var(--gold-dim), var(--gold-light), var(--gold-dim));
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s ease infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.logo-sub {
+  font-size: 11px;
+  letter-spacing: 6px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+/* ---- AUTH CARD ---- */
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  animation: fadeUp 0.8s ease 0.2s both;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,168,76,0.05);
+}
+
+/* ---- TABS ---- */
+.tab-bar {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+}
+.tab {
+  flex: 1;
+  padding: 16px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: var(--text-dim);
+  transition: all 0.3s;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+}
+.tab.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+  background: rgba(201,168,76,0.05);
+}
+
+/* ---- FORM PANELS ---- */
+.form-panel { display: none; padding: 32px; }
+.form-panel.active { display: block; }
+
+.field {
+  margin-bottom: 18px;
+}
+.field label {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+.field input {
+  width: 100%;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 13px 16px;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.field input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
+}
+.field input::placeholder { color: var(--text-dim); }
+
+/* ---- BUTTONS ---- */
+.btn-gold {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--gold-dim), var(--gold), var(--gold-light));
+  background-size: 200% 200%;
+  color: #0A0A0A;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 8px;
+}
+.btn-gold:hover:not(:disabled) {
+  background-position: right center;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(201,168,76,0.3);
+}
+.btn-gold:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-google {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 12px;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+.btn-google:hover {
+  border-color: var(--border-hover);
+  background: rgba(255,255,255,0.03);
+}
+
+.divider {
+  text-align: center;
+  margin: 20px 0 4px;
+  position: relative;
+}
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0; right: 0;
+  height: 1px;
+  background: var(--border);
+}
+.divider span {
+  position: relative;
+  background: var(--surface);
+  padding: 0 12px;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ---- STATUS SCREENS ---- */
+.status-screen {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+}
+.status-icon {
+  font-size: 64px;
+  margin-bottom: 24px;
+}
+.status-title {
+  font-family: 'Cinzel', serif;
+  font-size: 22px;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+.status-msg {
+  color: var(--text-dim);
+  font-size: 14px;
+  line-height: 1.8;
+  max-width: 360px;
+  margin-bottom: 28px;
+}
+.btn-outline {
+  padding: 12px 32px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-outline:hover {
+  border-color: var(--gold);
+  background: rgba(201,168,76,0.05);
+}
+
+/* ---- TOAST ---- */
+#toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 24px;
+  font-size: 13px;
+  z-index: 9999;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  white-space: nowrap;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+#toast.show { transform: translateX(-50%) translateY(0); }
+#toast.success { border-color: var(--green); color: var(--green); }
+#toast.error { border-color: var(--red); color: var(--red); }
+
+/* ---- ANIMATIONS ---- */
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- SCROLLBAR ---- */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ==============================
+     MAIN AUTH SCREEN
+     ============================== -->
+<div id="auth-screen" class="screen active">
+
+  <!-- Logo -->
+  <div class="logo-block">
+    <!-- Markhor Logo SVG (aap ki pic se inspired gold markhor) -->
+    <svg class="markhor-logo" viewBox="0 0 100 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#8B6914"/>
+          <stop offset="40%" stop-color="#C9A84C"/>
+          <stop offset="70%" stop-color="#E8C96A"/>
+          <stop offset="100%" stop-color="#C9A84C"/>
+        </linearGradient>
+        <linearGradient id="goldGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#E8C96A"/>
+          <stop offset="50%" stop-color="#C9A84C"/>
+          <stop offset="100%" stop-color="#8B6914"/>
+        </linearGradient>
+      </defs>
+      <!-- Left horn - twisted upward -->
+      <path d="M50 38 C42 34, 28 28, 18 10 C15 5, 12 2, 14 6 C18 14, 24 22, 30 30 C36 38, 42 42, 48 44" 
+            fill="url(#goldGrad)" stroke="url(#goldGrad2)" stroke-width="0.5"/>
+      <!-- Right horn - twisted upward -->
+      <path d="M50 38 C58 34, 72 28, 82 10 C85 5, 88 2, 86 6 C82 14, 76 22, 70 30 C64 38, 58 42, 52 44" 
+            fill="url(#goldGrad2)" stroke="url(#goldGrad)" stroke-width="0.5"/>
+      <!-- Left horn curve details -->
+      <path d="M20 12 C22 16, 25 20, 28 24" stroke="url(#goldGrad)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M16 8 C19 13, 22 18, 26 23" stroke="#E8C96A" stroke-width="0.8" fill="none" stroke-linecap="round" opacity="0.6"/>
+      <!-- Right horn curve details -->
+      <path d="M80 12 C78 16, 75 20, 72 24" stroke="url(#goldGrad2)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M84 8 C81 13, 78 18, 74 23" stroke="#E8C96A" stroke-width="0.8" fill="none" stroke-linecap="round" opacity="0.6"/>
+      <!-- Head/face -->
+      <ellipse cx="50" cy="52" rx="16" ry="14" fill="url(#goldGrad)"/>
+      <!-- Snout -->
+      <path d="M40 58 C42 64, 45 68, 50 70 C55 68, 58 64, 60 58" fill="url(#goldGrad2)"/>
+      <!-- Eye markings -->
+      <circle cx="44" cy="50" r="2.5" fill="#8B6914"/>
+      <circle cx="56" cy="50" r="2.5" fill="#8B6914"/>
+      <circle cx="44.8" cy="49.5" r="1" fill="#E8C96A" opacity="0.7"/>
+      <circle cx="56.8" cy="49.5" r="1" fill="#E8C96A" opacity="0.7"/>
+      <!-- Beard -->
+      <path d="M46 70 C44 76, 42 82, 44 90" stroke="url(#goldGrad)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M50 70 C50 78, 50 85, 50 93" stroke="url(#goldGrad2)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M54 70 C56 76, 58 82, 56 90" stroke="url(#goldGrad)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <!-- Neck + chest -->
+      <path d="M40 64 C34 68, 30 76, 32 84 C34 90, 42 94, 50 95 C58 94, 66 90, 68 84 C70 76, 66 68, 60 64" 
+            fill="url(#goldGrad)" opacity="0.7"/>
+      <!-- Body chest texture lines -->
+      <path d="M42 72 C44 74, 46 74, 48 72" stroke="#8B6914" stroke-width="0.8" fill="none" opacity="0.5"/>
+      <path d="M52 72 C54 74, 56 74, 58 72" stroke="#8B6914" stroke-width="0.8" fill="none" opacity="0.5"/>
+      <!-- Lower legs/feet hints -->
+      <path d="M42 94 C38 100, 36 108, 38 116 C39 120, 41 122, 40 118" 
+            stroke="url(#goldGrad)" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M58 94 C62 100, 64 108, 62 116 C61 120, 59 122, 60 118" 
+            stroke="url(#goldGrad2)" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- Hooves -->
+      <path d="M36 116 C34 120, 33 124, 36 126 C38 127, 42 126, 42 122" fill="url(#goldGrad)" opacity="0.9"/>
+      <path d="M64 116 C66 120, 67 124, 64 126 C62 127, 58 126, 58 122" fill="url(#goldGrad2)" opacity="0.9"/>
+      <!-- Chest detail texture -->
+      <path d="M45 60 C47 58, 53 58, 55 60" stroke="#E8C96A" stroke-width="0.8" fill="none" opacity="0.4"/>
+    </svg>
+
+    <div class="logo-title">MRMUJI FX</div>
+    <div class="logo-sub">Trading Journal</div>
+  </div>
+
+  <!-- Auth Card -->
+  <div class="auth-card">
+    <div class="tab-bar">
+      <button class="tab active" onclick="switchTab('login')">Login</button>
+      <button class="tab" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <!-- Login Panel -->
+    <div id="login-panel" class="form-panel active">
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" id="login-email" placeholder="aapki@email.com">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="login-pass" placeholder="••••••••">
+      </div>
+      <button class="btn-gold" id="login-btn" onclick="handleLogin()">Login Karein</button>
+      <div class="divider"><span>ya phir</span></div>
+      <button class="btn-google" onclick="handleGoogle()">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z"/></svg>
+        Google se Login Karein
+      </button>
+    </div>
+
+    <!-- Register Panel -->
+    <div id="register-panel" class="form-panel">
+      <div class="field">
+        <label>Poora Naam</label>
+        <input type="text" id="reg-name" placeholder="Apna naam likhein">
+      </div>
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" id="reg-email" placeholder="aapki@email.com">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="reg-pass" placeholder="Kam se kam 6 characters">
+      </div>
+      <div class="field">
+        <label>Password Confirm Karein</label>
+        <input type="password" id="reg-pass2" placeholder="Dobara likhein">
+      </div>
+      <button class="btn-gold" id="reg-btn" onclick="handleRegister()">Register Karein</button>
+      <div class="divider"><span>ya phir</span></div>
+      <button class="btn-google" onclick="handleGoogle()">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z"/></svg>
+        Google se Register Karein
+      </button>
+      <p style="text-align:center;font-size:11px;color:var(--text-dim);margin-top:16px;line-height:1.7;">
+        Register karne ke baad aap ka account mentor ki taraf se<br>approve hone ka intezaar karega.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ==============================
+     PENDING SCREEN
+     ============================== -->
+<div id="pending-screen" class="screen status-screen">
+  <div class="logo-block" style="margin-bottom:28px">
+    <div class="logo-title" style="font-size:20px">MRMUJI FX</div>
+  </div>
+  <div class="status-icon">⏳</div>
+  <div class="status-title">Approval Ka Intezaar</div>
+  <div class="status-msg">
+    Aap ka account successfully register ho gaya hai.<br>
+    Mentor (MrMuji FX) jald hi aap ka account approve kar denge.<br>
+    Approval ke baad aap ko access mil jaye ga.
+  </div>
+  <button class="btn-outline" onclick="handleLogout()">Logout</button>
+</div>
+
+<!-- ==============================
+     REJECTED SCREEN
+     ============================== -->
+<div id="rejected-screen" class="screen status-screen">
+  <div class="status-icon">❌</div>
+  <div class="status-title">Request Rejected</div>
+  <div class="status-msg">
+    Aap ka account approve nahi kiya gaya.<br>
+    Kisi masle ke liye mentor se rabta karein.
+  </div>
+  <button class="btn-outline" onclick="handleLogout()">Wapas Jaein</button>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+  if (tab === 'login') {
+    document.querySelectorAll('.tab')[0].classList.add('active');
+    document.getElementById('login-panel').classList.add('active');
+  } else {
+    document.querySelectorAll('.tab')[1].classList.add('active');
+    document.getElementById('register-panel').classList.add('active');
+  }
+}
+
+let toastTimer;
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `show ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Enter key support
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter') return;
+  const loginActive = document.getElementById('login-panel').classList.contains('active');
+  if (loginActive) handleLogin();
+  else handleRegister();
+});
 </script>
 </body>
 </html>
